@@ -49,7 +49,7 @@ internal final class ColorCutQuantizer {
 
 		// First, lets pack the populations into a SparseIntArray so that they can be easily
 		// retrieved without knowing a color's index
-		self.colorPopulations = Dictionary()
+		self.colorPopulations = Dictionary(minimumCapacity: rawColorCount)
 		for (var i = 0; i < rawColors.count; i++) {
 			self.colorPopulations[rawColors[i]] = rawColorCounts[i]
 		}
@@ -57,6 +57,8 @@ internal final class ColorCutQuantizer {
 		// Now go through all of the colors and keep those which we do not want to ignore
 		var validColorCount = 0
 		self.colors = Array()
+		self.colors.reserveCapacity(rawColorCount)
+
 		for color in rawColors {
 			if !self.shouldIgnoreColor(color) {
 				self.colors.append(color)
@@ -103,13 +105,13 @@ internal final class ColorCutQuantizer {
 	:param: queue Priority queue to poll for boxes
 	:param: maxSize Maximum amount of boxes to split
 	*/
-	private func splitBoxes(var queue: UnsafeMutablePointer<VboxPriorityQueue>, maxSize: Int) {
-		while queue.memory.count < maxSize {
-			if let vbox = queue.memory.pop() where vbox.canSplit {
+	private func splitBoxes(inout queue: VboxPriorityQueue, maxSize: Int) {
+		while queue.count < maxSize {
+			if let vbox = queue.pop() where vbox.canSplit {
 				// First split the box, and offer the result
-				queue.memory.push(vbox.splitBox())
+				queue.push(vbox.splitBox())
 				// Then offer the box back
-				queue.memory.push(vbox)
+				queue.push(vbox)
 			} else {
 				// If we get here then there are no more boxes to split, so return
 				return
@@ -320,18 +322,18 @@ private class Vbox: Hashable {
 		// Sort the colors in this box based on the longest color dimension.
 
 		var sorted = self.quantizer.colors[self.lowerIndex...self.upperIndex]
-		sort(&sorted)
+		sorted.sortInPlace()
 
 		if longestDimension == COMPONENT_RED {
-			sort(&sorted) {
+			sorted.sortInPlace() {
 				return HexColor.red($0) < HexColor.red($1)
 			}
 		} else if longestDimension == COMPONENT_GREEN {
-			sort(&sorted) {
+			sorted.sortInPlace() {
 				return HexColor.green($0) < HexColor.green($1)
 			}
 		} else  {
-			sort(&sorted) {
+			sorted.sortInPlace() {
 				return HexColor.blue($0) < HexColor.blue($1)
 			}
 		}

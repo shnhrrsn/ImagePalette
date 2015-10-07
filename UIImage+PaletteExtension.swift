@@ -49,9 +49,7 @@ extension UIImage {
 		if let colorSpace = CGColorSpaceCreateDeviceRGB() {
 			let bitmapData = malloc(bitmapByteCount)
 
-			let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedFirst.rawValue)
-
-			if let context = CGBitmapContextCreate(bitmapData, pixelsWide, pixelsHigh, 8, bitmapBytesPerRow, colorSpace, bitmapInfo) {
+			if let context = CGBitmapContextCreate(bitmapData, pixelsWide, pixelsHigh, 8, bitmapBytesPerRow, colorSpace, CGImageAlphaInfo.PremultipliedFirst.rawValue) {
 				CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGFloat(pixelsWide), CGFloat(pixelsHigh)), image)
 
 				let unconstrainedData = CGBitmapContextGetData(context)
@@ -60,7 +58,7 @@ extension UIImage {
 
 				for var x = 0; x < pixelsWide; x++ {
 					for var y = 0; y < pixelsHigh; y++ {
-						var pixelInfo = ((pixelsWide * y) + x) * 4
+						let pixelInfo = ((pixelsWide * y) + x) * 4
 
 						let alpha = Int(data[pixelInfo])
 						let red = Int(data[pixelInfo + 1])

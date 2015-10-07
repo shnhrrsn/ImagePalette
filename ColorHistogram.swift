@@ -36,7 +36,7 @@ public class ColorHistogram {
 	*/
 	public init(var pixels: [Int]) {
 		// Sort the pixels to enable counting below
-		sort(&pixels)
+		pixels.sortInPlace()
 
 		// Count number of distinct colors
 		self.numberOfColors = self.dynamicType.countDistinctColors(pixels)

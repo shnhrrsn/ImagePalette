@@ -122,7 +122,7 @@ public class PaletteSwatch {
 
 }
 
-extension PaletteSwatch: DebugPrintable {
+extension PaletteSwatch: CustomDebugStringConvertible {
 
 	public var debugDescription: String {
 		var description = "<\(self.dynamicType) 0x\(self.hashValue)"
