@@ -54,7 +54,7 @@ internal class RGBColor: Hashable, Equatable {
 
 		var h: CGFloat
 		var s: CGFloat
-		var l = (maxValue + minValue) / 2.0
+		let l = (maxValue + minValue) / 2.0
 
 		if maxValue == minValue {
 			// Monochromatic
