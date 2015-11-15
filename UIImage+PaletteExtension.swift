@@ -48,6 +48,7 @@ extension UIImage {
 
 		if let colorSpace = CGColorSpaceCreateDeviceRGB() {
 			let bitmapData = malloc(bitmapByteCount)
+			defer { free(bitmapData) }
 
 			if let context = CGBitmapContextCreate(bitmapData, pixelsWide, pixelsHigh, 8, bitmapBytesPerRow, colorSpace, CGImageAlphaInfo.PremultipliedFirst.rawValue) {
 				CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGFloat(pixelsWide), CGFloat(pixelsHigh)), image)
