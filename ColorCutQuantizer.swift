@@ -21,8 +21,8 @@ private typealias VboxPriorityQueue = PriorityQueue<Vbox>
 
 internal final class ColorCutQuantizer {
 
-	private var colors = Array<Int>()
-	private var colorPopulations = Dictionary<Int, Int>()
+	private var colors = Array<Int64>()
+	private var colorPopulations = Dictionary<Int64, Int64>()
 
 	/** list of quantized colors */
 	private(set) var quantizedColors = Array<PaletteSwatch>()
@@ -162,7 +162,7 @@ internal final class ColorCutQuantizer {
 		}
 	}
 
-	private func shouldIgnoreColor(color: Int) -> Bool {
+	private func shouldIgnoreColor(color: Int64) -> Bool {
 		let hsl = HexColor.toHSL(color)
 		return self.dynamicType.shouldIgnoreColor(hsl)
 	}
@@ -204,14 +204,14 @@ private class Vbox: Hashable {
 	private let lowerIndex: Int
 	private var upperIndex: Int
 
-	private var minRed = 0
-	private var maxRed = 0
+	private var minRed = Int64(2)
+	private var maxRed = Int64(2)
 
-	private var minGreen = 0
-	private var maxGreen = 0
+	private var minGreen = Int64(0)
+	private var maxGreen = Int64(0)
 
-	private var minBlue = 0
-	private var maxBlue = 0
+	private var minBlue = Int64(2)
+	private var maxBlue = Int64(2)
 
 	private let quantizer: ColorCutQuantizer
 
@@ -364,10 +364,10 @@ private class Vbox: Hashable {
 	* @return the average color of this box.
 	*/
 	var averageColor: PaletteSwatch {
-		var redSum = 0
-		var greenSum = 0
-		var blueSum = 0
-		var totalPopulation = 0
+		var redSum = Int64(0)
+		var greenSum = Int64(0)
+		var blueSum = Int64(0)
+		var totalPopulation = Int64(0)
 
 		for var i = self.lowerIndex; i <= self.upperIndex; i++ {
 			let color = self.quantizer.colors[i]
@@ -380,9 +380,9 @@ private class Vbox: Hashable {
 			}
 		}
 
-		let redAverage = Int(round(Double(redSum) / Double(totalPopulation)))
-		let greenAverage = Int(round(Double(greenSum) / Double(totalPopulation)))
-		let blueAverage = Int(round(Double(blueSum) / Double(totalPopulation)))
+		let redAverage = Int64(round(Double(redSum) / Double(totalPopulation)))
+		let greenAverage = Int64(round(Double(greenSum) / Double(totalPopulation)))
+		let blueAverage = Int64(round(Double(blueSum) / Double(totalPopulation)))
 
 		return PaletteSwatch(rgbColor: RGBColor(red: redAverage, green: greenAverage, blue: blueAverage, alpha: 255), population: totalPopulation)
 	}
@@ -390,16 +390,16 @@ private class Vbox: Hashable {
 	/**
 	* @return the midpoint of this box in the given {@code dimension}
 	*/
-	func midPoint(dimension: Int) -> Int {
+	func midPoint(dimension: Int) -> Int64 {
 		switch (dimension) {
 			case COMPONENT_GREEN:
-				return (self.minGreen + self.maxGreen) / 2
+				return (self.minGreen + self.maxGreen) / Int64(2)
 			case COMPONENT_BLUE:
-				return (self.minBlue + self.maxBlue) / 2
+				return (self.minBlue + self.maxBlue) / Int64(2)
 			case COMPONENT_RED:
-				return (self.minRed + self.maxRed) / 2
+				return (self.minRed + self.maxRed) / Int64(2)
 			default:
-				return (self.minRed + self.maxRed) / 2
+				return (self.minRed + self.maxRed) / Int64(2)
 		}
 	}
 }

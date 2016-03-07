@@ -38,35 +38,35 @@ internal class HSLColor {
 
 			let hueSegment = Int(self.hue / 60.0)
 
-			var r = 0
-			var g = 0
-			var b = 0
+			var r = Int64(0)
+			var g = Int64(0)
+			var b = Int64(0)
 
 			switch hueSegment {
 				case 0:
-					r = Int(round(255 * (c + m)))
-					g = Int(round(255 * (x + m)))
-					b = Int(round(255 * m))
+					r = Int64(round(255 * (c + m)))
+					g = Int64(round(255 * (x + m)))
+					b = Int64(round(255 * m))
 				case 1:
-					r = Int(round(255 * (x + m)))
-					g = Int(round(255 * (c + m)))
-					b = Int(round(255 * m))
+					r = Int64(round(255 * (x + m)))
+					g = Int64(round(255 * (c + m)))
+					b = Int64(round(255 * m))
 				case 2:
-					r = Int(round(255 * m))
-					g = Int(round(255 * (c + m)))
-					b = Int(round(255 * (x + m)))
+					r = Int64(round(255 * m))
+					g = Int64(round(255 * (c + m)))
+					b = Int64(round(255 * (x + m)))
 				case 3:
-					r = Int(round(255 * m))
-					g = Int(round(255 * (x + m)))
-					b = Int(round(255 * (c + m)))
+					r = Int64(round(255 * m))
+					g = Int64(round(255 * (x + m)))
+					b = Int64(round(255 * (c + m)))
 				case 4:
-					r = Int(round(255 * (x + m)))
-					g = Int(round(255 * m))
-					b = Int(round(255 * (c + m)))
+					r = Int64(round(255 * (x + m)))
+					g = Int64(round(255 * m))
+					b = Int64(round(255 * (c + m)))
 				case 5, 6:
-					r = Int(round(255 * (c + m)))
-					g = Int(round(255 * m))
-					b = Int(round(255 * (x + m)))
+					r = Int64(round(255 * (c + m)))
+					g = Int64(round(255 * m))
+					b = Int64(round(255 * (x + m)))
 				default:
 					break
 			}
@@ -75,7 +75,7 @@ internal class HSLColor {
 			g = max(0, min(255, g))
 			b = max(0, min(255, b))
 
-			let rgb = RGBColor(red: r, green: g, blue: b, alpha: Int(round(self.alpha * 255)))
+			let rgb = RGBColor(red: r, green: g, blue: b, alpha: Int64(round(self.alpha * 255)))
 			self._rgb = rgb
 			return rgb
 		}

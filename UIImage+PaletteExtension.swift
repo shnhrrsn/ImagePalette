@@ -37,7 +37,7 @@ extension UIImage {
 		return scaledImage
 	}
 
-	internal var pixels: Array<Int> {
+	internal var pixels: Array<Int64> {
 		let image = self.CGImage!
 
 		let pixelsWide = CGImageGetWidth(image)
@@ -55,16 +55,16 @@ extension UIImage {
 
 				let unconstrainedData = CGBitmapContextGetData(context)
 				let data = UnsafePointer<UInt8>(unconstrainedData)
-				var pixels = Array<Int>()
+				var pixels = Array<Int64>()
 
 				for var x = 0; x < pixelsWide; x++ {
 					for var y = 0; y < pixelsHigh; y++ {
 						let pixelInfo = ((pixelsWide * y) + x) * 4
 
-						let alpha = Int(data[pixelInfo])
-						let red = Int(data[pixelInfo + 1])
-						let green = Int(data[pixelInfo + 2])
-						let blue = Int(data[pixelInfo + 3])
+						let alpha = Int64(data[pixelInfo])
+						let red = Int64(data[pixelInfo + 1])
+						let green = Int64(data[pixelInfo + 2])
+						let blue = Int64(data[pixelInfo + 3])
 
 						pixels.append(HexColor.fromARGB(alpha, red: red, green: green, blue: blue))
 					}

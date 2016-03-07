@@ -10,18 +10,19 @@ import Foundation
 import UIKit
 
 internal class RGBColor: Hashable, Equatable {
-	final let red: Int
-	final let green: Int
-	final let blue: Int
-	final let alpha: Int
+	final let red: Int64
+	final let green: Int64
+	final let blue: Int64
+	final let alpha: Int64
 	final let hashValue: Int
 
-	init(red: Int, green: Int, blue: Int, alpha: Int) {
+	init(red: Int64, green: Int64, blue: Int64, alpha: Int64) {
 		self.red = red
 		self.green = green
 		self.blue = blue
 		self.alpha = alpha
-		self.hashValue = (alpha << 24) | (red << 16) | (green << 8) | blue
+        let maxInt = Int64(Int32.max)
+		self.hashValue = Int(((alpha << 24) | (red << 16) | (green << 8) | blue) % maxInt)
 	}
 
 	convenience init(color: UIColor) {
@@ -32,14 +33,14 @@ internal class RGBColor: Hashable, Equatable {
 
 		color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
 
-		self.init(red: Int(round(red * 255.0)), green: Int(round(green * 255.0)), blue: Int(round(blue * 255.0)), alpha: Int(round(alpha * 255.0)))
+		self.init(red: Int64(round(red * 255.0)), green: Int64(round(green * 255.0)), blue: Int64(round(blue * 255.0)), alpha: Int64(round(alpha * 255.0)))
 	}
 
 	var color: UIColor {
 		return UIColor(red: CGFloat(self.red) / 255.0, green: CGFloat(self.green) / 255.0, blue: CGFloat(self.blue) / 255.0, alpha: CGFloat(self.alpha) / 255.0)
 	}
 
-	var hex: Int {
+	var hex: Int64 {
 		return HexColor.fromRGB(self.red, green: self.green, blue: self.blue)
 	}
 
