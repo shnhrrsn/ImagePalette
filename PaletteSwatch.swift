@@ -15,13 +15,13 @@ public class PaletteSwatch {
 	private static let MIN_CONTRAST_BODY_TEXT = CGFloat(4.5)
 
 	private let rgb: RGBColor
-	private let hex: Int
+	private let hex: Int64
 
 	/** This swatch's color */
 	public let color: UIColor
 
 	/** The number of pixels represented by this swatch */
-	public let population: Int
+	public let population: Int64
 
 	private var generatedTextColors: Bool = false
 	private var _titleTextColor: UIColor?
@@ -29,15 +29,15 @@ public class PaletteSwatch {
 
 	private var _hsl: HSLColor?
 
-	public convenience init(color: UIColor, population: Int) {
+	public convenience init(color: UIColor, population: Int64) {
 		self.init(rgbColor: RGBColor(color: color), population: population)
 	}
 
-	internal convenience init(color: HSLColor, population: Int) {
+	internal convenience init(color: HSLColor, population: Int64) {
 		self.init(rgbColor: color.rgb, population: population)
 	}
 
-	internal init(rgbColor: RGBColor, population: Int) {
+	internal init(rgbColor: RGBColor, population: Int64) {
 		self.rgb = rgbColor
 		self.hex = rgbColor.hex
 		self.color = rgbColor.color
@@ -78,8 +78,8 @@ public class PaletteSwatch {
 	private func ensureTextColorsGenerated() {
 		if (!self.generatedTextColors) {
 			// First check white, as most colors will be dark
-			let lightBodyAlpha = HexColor.calculateMinimumAlpha(HexColor.WHITE, background: self.hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_BODY_TEXT)
-			let lightTitleAlpha = HexColor.calculateMinimumAlpha(HexColor.WHITE, background: self.hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_TITLE_TEXT)
+			let lightBodyAlpha = HexColor.calculateMinimumAlpha(HexColor.WHITE, background: hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_BODY_TEXT)
+			let lightTitleAlpha = HexColor.calculateMinimumAlpha(HexColor.WHITE, background: hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_TITLE_TEXT)
 
 			if let lightBodyAlpha = lightBodyAlpha, let lightTitleAlpha = lightTitleAlpha {
 				// If we found valid light values, use them and return
@@ -90,8 +90,8 @@ public class PaletteSwatch {
 				return
 			}
 
-			let darkBodyAlpha = HexColor.calculateMinimumAlpha(HexColor.BLACK, background: self.hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_BODY_TEXT)
-			let darkTitleAlpha = HexColor.calculateMinimumAlpha(HexColor.BLACK, background: self.hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_TITLE_TEXT)
+			let darkBodyAlpha = HexColor.calculateMinimumAlpha(HexColor.BLACK, background: hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_BODY_TEXT)
+			let darkTitleAlpha = HexColor.calculateMinimumAlpha(HexColor.BLACK, background: hex, minContrastRatio: self.dynamicType.MIN_CONTRAST_TITLE_TEXT)
 
 			if let darkBodyAlpha = darkBodyAlpha, let darkTitleAlpha = darkTitleAlpha {
 				// If we found valid dark values, use them and return
@@ -139,7 +139,8 @@ extension PaletteSwatch: CustomDebugStringConvertible {
 extension PaletteSwatch: Equatable, Hashable {
 
 	public var hashValue: Int {
-		return 31 * self.color.hashValue + self.population
+        let maxInt = Int64(Int32.max)
+		return Int((31 * self.color.hashValue + self.population) % maxInt)
 	}
 
 }

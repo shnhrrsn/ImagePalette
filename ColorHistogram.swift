@@ -17,12 +17,12 @@ public class ColorHistogram {
 	/**
 	An array containing all of the distinct colors in the image.
 	*/
-	private(set) public var colors = Array<Int>()
+	private(set) public var colors = Array<Int64>()
 
 	/**
 	An array containing the frequency of a distinct colors within the image.
 	*/
-	private(set) public var colorCounts = Array<Int>()
+	private(set) public var colorCounts = Array<Int64>()
 
 	/**
 	Number of distinct colors in the image.
@@ -34,7 +34,7 @@ public class ColorHistogram {
 
 	:param: Pixels array of image contents
 	*/
-	public init(var pixels: [Int]) {
+	public init(var pixels: [Int64]) {
 		// Sort the pixels to enable counting below
 		pixels.sortInPlace()
 
@@ -45,7 +45,7 @@ public class ColorHistogram {
 		self.countFrequencies(pixels)
 	}
 
-	private static func countDistinctColors(pixels: [Int]) -> Int {
+	private static func countDistinctColors(pixels: [Int64]) -> Int {
 		if pixels.count < 2 {
 			// If we have less than 2 pixels we can stop here
 			return pixels.count
@@ -67,7 +67,7 @@ public class ColorHistogram {
 		return colorCount
 	}
 
-	private func countFrequencies(pixels: [Int]) {
+	private func countFrequencies(pixels: [Int64]) {
 		if pixels.count == 0 {
 			return
 		}

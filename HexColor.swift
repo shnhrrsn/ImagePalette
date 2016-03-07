@@ -18,28 +18,28 @@ internal class HexColor {
 	/**
 	:return: The alpha component of a color int.
 	*/
-	internal static func alpha(color: Int) -> Int {
+	internal static func alpha(color: Int64) -> Int64 {
 		return color >> 24
 	}
 
 	/**
 	:return: The red component of a color int.
 	*/
-	internal static func red(color: Int) -> Int {
+	internal static func red(color: Int64) -> Int64 {
 		return (color >> 16) & 0xFF
 	}
 
 	/**
 	:return: The green component of a color int.
 	*/
-	internal static func green(color: Int) -> Int {
+	internal static func green(color: Int64) -> Int64 {
 		return (color >> 8) & 0xFF
 	}
 
 	/**
 	:return: The blue component of a color int.
 	*/
-	internal static func blue(color: Int) -> Int {
+	internal static func blue(color: Int64) -> Int64 {
 		return color & 0xFF
 	}
 
@@ -54,7 +54,7 @@ internal class HexColor {
 	:param: green Green component [0..255] of the color
 	:param: blue  Blue component [0..255] of the color
 	*/
-	internal static func fromRGB(red: Int, green: Int, blue: Int) -> Int {
+	internal static func fromRGB(red: Int64, green: Int64, blue: Int64) -> Int64 {
 		return (0xFF << 24) | (red << 16) | (green << 8) | blue
 	}
 
@@ -69,24 +69,24 @@ internal class HexColor {
 	:param: green Green component [0..255] of the color
 	:param: blue  Blue component [0..255] of the color
 	*/
-	internal static func fromARGB(alpha: Int, red: Int, green: Int, blue: Int) -> Int {
+	internal static func fromARGB(alpha: Int64, red: Int64, green: Int64, blue: Int64) -> Int64 {
 		return (alpha << 24) | (red << 16) | (green << 8) | blue
 	}
 
-	internal static func toUIColor(color: Int) -> UIColor {
+	internal static func toUIColor(color: Int64) -> UIColor {
 		return UIColor(red: CGFloat(self.red(color)) / 255.0, green: CGFloat(self.green(color)) / 255.0, blue: CGFloat(self.blue(color)) / 255.0, alpha: CGFloat(self.alpha(color)) / 255.0)
 	}
 
-	internal static func toRGB(color: Int) -> RGBColor {
+	internal static func toRGB(color: Int64) -> RGBColor {
 		return RGBColor(red: self.red(color), green: self.green(color), blue: self.blue(color), alpha: self.alpha(color))
 	}
 
-	internal static func toHSL(color: Int) -> HSLColor {
+	internal static func toHSL(color: Int64) -> HSLColor {
 		return self.toRGB(color).hsl
 	}
 
 	/** Composite two potentially translucent colors over each other and returns the result. */
-	internal static func compositeColors(foreground: Int, background: Int) -> Int {
+	internal static func compositeColors(foreground: Int64, background: Int64) -> Int64 {
 		let alpha1 = CGFloat(self.alpha(foreground)) / 255.0
 		let alpha2 = CGFloat(self.alpha(background)) / 255.0
 
@@ -95,7 +95,7 @@ internal class HexColor {
 		let g = (CGFloat(self.green(foreground)) * alpha1) + (CGFloat(self.green(background)) * alpha2 * (1.0 - alpha1))
 		let b = (CGFloat(self.blue(foreground)) * alpha1) + (CGFloat(self.blue(background)) * alpha2 * (1.0 - alpha1))
 
-		return self.fromARGB(Int(a), red: Int(r), green: Int(g), blue: Int(b))
+		return self.fromARGB(Int64(a), red: Int64(r), green: Int64(g), blue: Int64(b))
 	}
 
 	/**
@@ -103,7 +103,7 @@ internal class HexColor {
 	
 	:return: The luminance of a color
 	*/
-	internal static func calculateLuminance(color: Int) -> CGFloat {
+	internal static func calculateLuminance(color: Int64) -> CGFloat {
 		var red = CGFloat(self.red(color)) / 255.0
 		red = red < 0.03928 ? red / 12.92 : pow((red + 0.055) / 1.055, 2.4)
 
@@ -122,7 +122,7 @@ internal class HexColor {
 
 	Formula defined http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
 	*/
-	internal static func calculateContrast(var foreground: Int, background: Int) -> CGFloat {
+	internal static func calculateContrast(var foreground: Int64, background: Int64) -> CGFloat {
 		assert(self.alpha(background) == 255, "background can not be translucent")
 
 		if self.alpha(foreground) < 255 {
@@ -148,7 +148,7 @@ internal class HexColor {
 
 	:return: the alpha value in the range 0-255, or nil if no value could be calculated.
 	*/
-	internal static func calculateMinimumAlpha(foreground: Int, background: Int, minContrastRatio: CGFloat) -> Int? {
+	internal static func calculateMinimumAlpha(foreground: Int64, background: Int64, minContrastRatio: CGFloat) -> Int64? {
 		assert(self.alpha(background) == 255, "background can not be translucent")
 
 		// First lets check that a fully opaque foreground has sufficient contrast
@@ -161,11 +161,11 @@ internal class HexColor {
 
 		// Binary search to find a value with the minimum value which provides sufficient contrast
 		var numIterations = 0
-		var minAlpha = 0
-		var maxAlpha = 255
+		var minAlpha = Int64(0)
+		var maxAlpha = Int64(255)
 
 		while numIterations <= MIN_ALPHA_SEARCH_MAX_ITERATIONS && (maxAlpha - minAlpha) > MIN_ALPHA_SEARCH_PRECISION {
-			let testAlpha = (minAlpha + maxAlpha) / 2
+            let testAlpha = Int64((minAlpha + maxAlpha) / 2)
 
 			testForeground = self.setAlphaComponent(foreground, alpha: testAlpha)
 			testRatio = self.calculateContrast(testForeground, background: background)
@@ -184,7 +184,7 @@ internal class HexColor {
 	}
 
 	/** Set the alpha component of color to be alpha. */
-	internal static func setAlphaComponent(color: Int, alpha: Int) -> Int {
+	internal static func setAlphaComponent(color: Int64, alpha: Int64) -> Int64 {
 		assert(alpha >= 0 && alpha <= 255, "alpha must be between 0 and 255.")
 		return (color & 0x00ffffff) | (alpha << 24)
 	}

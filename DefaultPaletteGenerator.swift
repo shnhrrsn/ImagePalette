@@ -32,7 +32,7 @@ private let WEIGHT_POPULATION = CGFloat(1.0)
 internal class DefaultPaletteGenerator: PaletteGenerator {
 
 	private var swatches = Array<PaletteSwatch>()
-	private var highestPopulation = 0
+	private var highestPopulation = Int64(0)
 
 	private(set) var vibrantSwatch: PaletteSwatch?
 	private(set) var lightVibrantSwatch: PaletteSwatch?
@@ -81,8 +81,8 @@ internal class DefaultPaletteGenerator: PaletteGenerator {
 	}
 
 	/** Find the PaletteSwatch with the highest population value and return the population. */
-	private func findMaxPopulation() -> Int {
-		var population = 0
+	private func findMaxPopulation() -> Int64 {
+		var population = Int64(0)
 
 		for swatch in self.swatches {
 			population = max(population, swatch.population)
@@ -119,11 +119,11 @@ internal class DefaultPaletteGenerator: PaletteGenerator {
 		return self.vibrantSwatch == swatch || self.darkVibrantSwatch == swatch || self.lightVibrantSwatch == swatch || self.mutedSwatch == swatch || self.darkMutedSwatch == swatch || self.lightMutedSwatch == swatch
 	}
 
-	private static func createComparisonValue(saturation: CGFloat, targetSaturation: CGFloat, luma: CGFloat, targetLuma: CGFloat, population: Int, maxPopulation: Int) -> CGFloat {
+	private static func createComparisonValue(saturation: CGFloat, targetSaturation: CGFloat, luma: CGFloat, targetLuma: CGFloat, population: Int64, maxPopulation: Int64) -> CGFloat {
 			return self.createComparisonValue(saturation, targetSaturation: targetSaturation, saturationWeight: WEIGHT_SATURATION, luma: luma, targetLuma: targetLuma, lumaWeight: WEIGHT_LUMA, population: population, maxPopulation: maxPopulation, populationWeight: WEIGHT_POPULATION)
 	}
 
-	private static func createComparisonValue(saturation: CGFloat, targetSaturation: CGFloat, saturationWeight: CGFloat, luma: CGFloat, targetLuma: CGFloat, lumaWeight: CGFloat, population: Int, maxPopulation: Int, populationWeight: CGFloat) -> CGFloat {
+	private static func createComparisonValue(saturation: CGFloat, targetSaturation: CGFloat, saturationWeight: CGFloat, luma: CGFloat, targetLuma: CGFloat, lumaWeight: CGFloat, population: Int64, maxPopulation: Int64, populationWeight: CGFloat) -> CGFloat {
 		return weightedMean([
 			invertDiff(saturation, targetValue: targetSaturation), saturationWeight,
 			invertDiff(luma, targetValue: targetLuma), lumaWeight,
