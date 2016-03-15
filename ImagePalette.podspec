@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "ImagePalette"
-  s.version      = "0.0.3"
+  s.version      = "0.0.4"
   s.summary      = "Swift/iOS port of Android's Palette"
   s.homepage     = "https://github.com/shnhrrsn/ImagePalette"
   s.license      = "Apache License 2.0"
