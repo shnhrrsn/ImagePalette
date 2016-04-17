@@ -57,8 +57,8 @@ extension UIImage {
 				let data = UnsafePointer<UInt8>(unconstrainedData)
 				var pixels = Array<Int64>()
 
-				for var x = 0; x < pixelsWide; x++ {
-					for var y = 0; y < pixelsHigh; y++ {
+				for x in 0 ..< pixelsWide {
+					for y in 0 ..< pixelsHigh {
 						let pixelInfo = ((pixelsWide * y) + x) * 4
 
 						let alpha = Int64(data[pixelInfo])

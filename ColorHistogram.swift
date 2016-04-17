@@ -34,8 +34,9 @@ public class ColorHistogram {
 
 	:param: Pixels array of image contents
 	*/
-	public init(var pixels: [Int64]) {
+	public init(pixels: [Int64]) {
 		// Sort the pixels to enable counting below
+		var pixels = pixels
 		pixels.sortInPlace()
 
 		// Count number of distinct colors
@@ -60,7 +61,7 @@ public class ColorHistogram {
 			// If we encounter a new color, increase the population
 			if pixel != currentColor {
 				currentColor = pixel
-				colorCount++
+				colorCount += 1
 			}
 		}
 
@@ -87,12 +88,12 @@ public class ColorHistogram {
 		for pixel in pixels {
 			if pixel == currentColor {
 				// We've hit the same color as before, increase population
-				self.colorCounts[currentColorIndex]++
+				self.colorCounts[currentColorIndex] += 1
 			} else {
 				// We've hit a new color, increase index
 				currentColor = pixel
 
-				currentColorIndex++
+				currentColorIndex += 1
 				self.colors.append(currentColor)
 				self.colorCounts.append(1)
 			}
