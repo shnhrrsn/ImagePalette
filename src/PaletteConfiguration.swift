@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-public final class PaletteConfiguration {
+public struct PaletteConfiguration {
 	private static let DEFAULT_CALCULATE_NUMBER_COLORS = 16
 	private static let DEFAULT_RESIZE_BITMAP_MAX_DIMENSION = CGFloat(192)
 

@@ -9,13 +9,11 @@
 import Foundation
 import UIKit
 
-internal class HSLColor {
-	final let hue: CGFloat
-	final let saturation: CGFloat
-	final let lightness: CGFloat
-	final let alpha: CGFloat
-
-	private var _rgb: RGBColor?
+internal struct HSLColor {
+	let hue: CGFloat
+	let saturation: CGFloat
+	let lightness: CGFloat
+	let alpha: CGFloat
 
 	init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat, alpha: CGFloat) {
 		self.hue = hue
@@ -29,10 +27,6 @@ internal class HSLColor {
 	}
 
 	var rgb: RGBColor {
-		if let rgb = self._rgb {
-			return rgb
-		}
-
 		let c = (1.0 - abs(2 * self.lightness - 1.0)) * self.saturation
 		let m = self.lightness - 0.5 * c
 		let x = c * (1.0 - abs(((self.hue / 60.0).truncatingRemainder(dividingBy: 2.0)) - 1.0))
@@ -76,9 +70,7 @@ internal class HSLColor {
 		g = max(0, min(255, g))
 		b = max(0, min(255, b))
 
-		let rgb = RGBColor(red: r, green: g, blue: b, alpha: Int64(round(self.alpha * 255)))
-		self._rgb = rgb
-		return rgb
+		return RGBColor(red: r, green: g, blue: b, alpha: Int64(round(self.alpha * 255)))
 	}
 
 	internal func colorWith(lightness: CGFloat) -> HSLColor {

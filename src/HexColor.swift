@@ -11,7 +11,7 @@ import UIKit
 private let MIN_ALPHA_SEARCH_MAX_ITERATIONS = 10
 private let MIN_ALPHA_SEARCH_PRECISION = 10
 
-internal class HexColor {
+internal struct HexColor {
 	static let WHITE = HexColor.fromRGB(255, green: 255, blue: 255)
 	static let BLACK = HexColor.fromRGB(0, green: 0, blue: 0)
 

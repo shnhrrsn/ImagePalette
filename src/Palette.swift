@@ -13,7 +13,7 @@ private func createQueue() -> DispatchQueue {
 	return DispatchQueue(label: "palette.generator", qos: .background, attributes: .concurrent, target: DispatchQueue.global(qos: .background))
 }
 
-public final class Palette {
+public struct Palette {
 	static var internalQueue = createQueue()
 	
 	/** All of the swatches which make up the palette */
@@ -28,7 +28,7 @@ public final class Palette {
 	/**
 	Create a palette synchronously.
 	*/
-	public convenience init(configuration: PaletteConfiguration) {
+	public init(configuration: PaletteConfiguration) {
 		let (swatches, generator) = configuration.generate()
 		self.init(swatches: swatches, generator: generator)
 	}

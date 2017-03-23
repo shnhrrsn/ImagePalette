@@ -9,12 +9,12 @@
 import Foundation
 import UIKit
 
-internal class RGBColor: Hashable, Equatable {
-	final let red: Int64
-	final let green: Int64
-	final let blue: Int64
-	final let alpha: Int64
-	final let hashValue: Int
+internal struct RGBColor: Hashable, Equatable {
+	let red: Int64
+	let green: Int64
+	let blue: Int64
+	let alpha: Int64
+	let hashValue: Int
 
 	init(red: Int64, green: Int64, blue: Int64, alpha: Int64) {
 		self.red = red
@@ -25,7 +25,7 @@ internal class RGBColor: Hashable, Equatable {
 		self.hashValue = Int(((alpha << 24) | (red << 16) | (green << 8) | blue) % maxInt)
 	}
 
-	convenience init(color: UIColor) {
+	init(color: UIColor) {
 		var red: CGFloat = 0.0
 		var green: CGFloat = 0.0
 		var blue: CGFloat = 0.0

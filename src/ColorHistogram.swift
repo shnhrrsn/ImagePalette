@@ -12,22 +12,22 @@ import UIKit
 /**
 Class which provides a histogram for RGB values.
 */
-open class ColorHistogram {
+public struct ColorHistogram {
 
 	/**
 	An array containing all of the distinct colors in the image.
 	*/
-	private(set) open var colors = [Int64]()
+	private(set) public var colors = [Int64]()
 
 	/**
 	An array containing the frequency of a distinct colors within the image.
 	*/
-	private(set) open var colorCounts = [Int64]()
+	private(set) public var colorCounts = [Int64]()
 
 	/**
 	Number of distinct colors in the image.
 	*/
-	private(set) open var numberOfColors: Int
+	private(set) public var numberOfColors: Int
 
 	/**
 	A new ColorHistogram instance.
@@ -68,7 +68,7 @@ open class ColorHistogram {
 		return colorCount
 	}
 
-	private func countFrequencies(_ pixels: [Int64]) {
+	private mutating func countFrequencies(_ pixels: [Int64]) {
 		if pixels.count == 0 {
 			return
 		}
