@@ -12,22 +12,22 @@ import UIKit
 /**
 Class which provides a histogram for RGB values.
 */
-public class ColorHistogram {
+open class ColorHistogram {
 
 	/**
 	An array containing all of the distinct colors in the image.
 	*/
-	private(set) public var colors = Array<Int64>()
+	private(set) open var colors = [Int64]()
 
 	/**
 	An array containing the frequency of a distinct colors within the image.
 	*/
-	private(set) public var colorCounts = Array<Int64>()
+	private(set) open var colorCounts = [Int64]()
 
 	/**
 	Number of distinct colors in the image.
 	*/
-	private(set) public var numberOfColors: Int
+	private(set) open var numberOfColors: Int
 
 	/**
 	A new ColorHistogram instance.
@@ -37,16 +37,16 @@ public class ColorHistogram {
 	public init(pixels: [Int64]) {
 		// Sort the pixels to enable counting below
 		var pixels = pixels
-		pixels.sortInPlace()
+		pixels.sort()
 
 		// Count number of distinct colors
-		self.numberOfColors = self.dynamicType.countDistinctColors(pixels)
+		self.numberOfColors = type(of: self).countDistinctColors(pixels)
 
 		// Finally count the frequency of each color
 		self.countFrequencies(pixels)
 	}
 
-	private static func countDistinctColors(pixels: [Int64]) -> Int {
+	private static func countDistinctColors(_ pixels: [Int64]) -> Int {
 		if pixels.count < 2 {
 			// If we have less than 2 pixels we can stop here
 			return pixels.count
@@ -68,7 +68,7 @@ public class ColorHistogram {
 		return colorCount
 	}
 
-	private func countFrequencies(pixels: [Int64]) {
+	private func countFrequencies(_ pixels: [Int64]) {
 		if pixels.count == 0 {
 			return
 		}
@@ -87,10 +87,10 @@ public class ColorHistogram {
 		// Now iterate from the second pixel to the end, population distinct colors
 		for pixel in pixels {
 			if pixel == currentColor {
-				// We've hit the same color as before, increase population
+				// We’ve hit the same color as before, increase population
 				self.colorCounts[currentColorIndex] += 1
 			} else {
-				// We've hit a new color, increase index
+				// We’ve hit a new color, increase index
 				currentColor = pixel
 
 				currentColorIndex += 1

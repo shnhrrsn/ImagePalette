@@ -21,15 +21,15 @@ public final class PaletteConfiguration {
 	as the source.
 
 	Good values for depend on the source image type. For landscapes, good values are in
-	the range 10-16. For images which are largely made up of people's faces then this
+	the range 10-16. For images which are largely made up of people’s faces then this
 	value should be increased to ~24.
 	*/
 	public var maxColors = DEFAULT_CALCULATE_NUMBER_COLORS
 
 	/**
-	Set the resize value when using an image as the source. If the bitmap's largest
+	Set the resize value when using an image as the source. If the bitmap’s largest
 	dimension is greater than the value specified, then the image will be resized so
-	that it's largest dimension matches maxDimension. If the bitmap is smaller or
+	that it’s largest dimension matches maxDimension. If the bitmap is smaller or
 	equal, the original is used as-is.
 	
 	This value has a large effect on the processing time. The larger the resized image is,
@@ -68,16 +68,16 @@ public final class PaletteConfiguration {
 
 			assert(self.resizeMaxDimension > 0, "Minimum dimension size for resizing should should be >= 1")
 
-			// First we'll scale down the bitmap so it's largest dimension is as specified
-			if let scaledBitmap = image.scaleDown(self.resizeMaxDimension) {
-				// Now generate a quantizer from the Bitmap
-				let quantizer = ColorCutQuantizer.fromImage(scaledBitmap, maxColors: self.maxColors);
-				swatches = quantizer.quantizedColors
-			} else {
+			// First we’ll scale down the bitmap so it’s largest dimension is as specified
+			guard let scaledBitmap = image.scaleDown(to: self.resizeMaxDimension) else {
 				fatalError("Unable to scale down image.")
 			}
+
+			// Now generate a quantizer from the Bitmap
+			let quantizer = ColorCutQuantizer.from(image: scaledBitmap, maxColors: self.maxColors);
+			swatches = quantizer.quantizedColors
 		} else if let s = self.swatches {
-			// We're using the provided swatches
+			// We’re using the provided swatches
 			swatches = s
 		} else {
 			fatalError("Invalid palette configuration.")
@@ -92,8 +92,8 @@ public final class PaletteConfiguration {
 			generator = DefaultPaletteGenerator()
 		}
 
-		// Now call let the Generator do it's thing
-		generator.generate(swatches)
+		// Now call let the Generator do it’s thing
+		generator.generate(swatches: swatches)
 
 		return (swatches, generator)
 	}

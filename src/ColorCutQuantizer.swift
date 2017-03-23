@@ -21,11 +21,11 @@ private typealias VboxPriorityQueue = PriorityQueue<Vbox>
 
 internal final class ColorCutQuantizer {
 
-	private var colors = Array<Int64>()
-	private var colorPopulations = Dictionary<Int64, Int64>()
+	fileprivate var colors = [Int64]()
+	fileprivate var colorPopulations = [Int64: Int64]()
 
 	/** list of quantized colors */
-	private(set) var quantizedColors = Array<PaletteSwatch>()
+	private(set) var quantizedColors = [PaletteSwatch]()
 
 	/**
 	Factory-method to generate a ColorCutQuantizer from a UIImage.
@@ -33,13 +33,13 @@ internal final class ColorCutQuantizer {
 	:param: image Image to extract the pixel data from
 	:param: maxColors The maximum number of colors that should be in the result palette.
 	*/
-	internal static func fromImage(image: UIImage, maxColors: Int) -> ColorCutQuantizer {
+	internal static func from(image: UIImage, maxColors: Int) -> ColorCutQuantizer {
 		let pixels = image.pixels
 		return ColorCutQuantizer(colorHistogram: ColorHistogram(pixels: pixels), maxColors: maxColors)
 	}
 
 	/**
-	:param: colorHistogram histogram representing an image's pixel data
+	:param: colorHistogram histogram representing an image’s pixel data
 	:param maxColors The maximum number of colors that should be in the result palette.
 	*/
 	private init(colorHistogram: ColorHistogram, maxColors: Int) {
@@ -48,7 +48,7 @@ internal final class ColorCutQuantizer {
 		let rawColorCounts = colorHistogram.colorCounts
 
 		// First, lets pack the populations into a SparseIntArray so that they can be easily
-		// retrieved without knowing a color's index
+		// retrieved without knowing a color’s index
 		self.colorPopulations = Dictionary(minimumCapacity: rawColorCount)
 		for i in 0 ..< rawColors.count {
 			self.colorPopulations[rawColors[i]] = rawColorCounts[i]
@@ -56,27 +56,31 @@ internal final class ColorCutQuantizer {
 
 		// Now go through all of the colors and keep those which we do not want to ignore
 		var validColorCount = 0
-		self.colors = Array()
+		self.colors = [ ]
 		self.colors.reserveCapacity(rawColorCount)
 
 		for color in rawColors {
-			if !self.shouldIgnoreColor(color) {
-				self.colors.append(color)
-				validColorCount += 1
+			guard !self.shouldIgnore(color: color) else {
+				continue
 			}
+
+			self.colors.append(color)
+			validColorCount += 1
 		}
 
-		if (validColorCount <= maxColors) {
+		if validColorCount <= maxColors {
 			// The image has fewer colors than the maximum requested, so just return the colors
-			self.quantizedColors = Array()
+			self.quantizedColors = [ ]
 			for color in self.colors {
-				if let populations = self.colorPopulations[color] {
-					self.quantizedColors.append(PaletteSwatch(color: HexColor.toUIColor(color), population: populations))
+				guard let populations = self.colorPopulations[color] else {
+					continue
 				}
+
+				self.quantizedColors.append(PaletteSwatch(color: HexColor.toUIColor(color), population: populations))
 			}
 		} else {
 			// We need use quantization to reduce the number of colors
-			self.quantizedColors = self.quantizePixels(validColorCount - 1, maxColors: maxColors)
+			self.quantizedColors = self.quantizePixels(maxColorIndex: validColorCount - 1, maxColors: maxColors)
 		}
 	}
 
@@ -92,10 +96,10 @@ internal final class ColorCutQuantizer {
 
 		// Now go through the boxes, splitting them until we have reached maxColors or there are no
 		// more boxes to split
-		self.splitBoxes(&pq, maxSize: maxColors)
+		self.splitBoxes(queue: &pq, maxSize: maxColors)
 
 		// Finally, return the average colors of the color boxes
-		return generateAverageColors(pq)
+		return generateAverageColors(vboxes: pq)
 	}
 
 	/**
@@ -105,31 +109,33 @@ internal final class ColorCutQuantizer {
 	:param: queue Priority queue to poll for boxes
 	:param: maxSize Maximum amount of boxes to split
 	*/
-	private func splitBoxes(inout queue: VboxPriorityQueue, maxSize: Int) {
+	private func splitBoxes(queue: inout VboxPriorityQueue, maxSize: Int) {
 		while queue.count < maxSize {
-			if let vbox = queue.pop() where vbox.canSplit {
-				// First split the box, and offer the result
-				queue.push(vbox.splitBox())
-				// Then offer the box back
-				queue.push(vbox)
-			} else {
+			guard let vbox = queue.pop(), vbox.canSplit else {
 				// If we get here then there are no more boxes to split, so return
 				return
 			}
+
+			// First split the box, and offer the result
+			queue.push(vbox.splitBox())
+			// Then offer the box back
+			queue.push(vbox)
 		}
 	}
 
 	private func generateAverageColors(vboxes: VboxPriorityQueue) -> [PaletteSwatch] {
-		var colors = Array<PaletteSwatch>()
+		var colors = [PaletteSwatch]()
 
 		for vbox in vboxes {
 			let color = vbox.averageColor
 			
-			if (!self.dynamicType.shouldIgnoreColor(color)) {
-				// As we're averaging a color box, we can still get colors which we do not want, so
-				// we check again here
-				colors.append(color)
+			guard !type(of: self).shouldIgnore(color: color) else {
+				continue
 			}
+
+			// As we’re averaging a color box, we can still get colors which we do not want, so
+			// we check again here
+			colors.append(color)
 		}
 
 		return colors
@@ -162,38 +168,41 @@ internal final class ColorCutQuantizer {
 		}
 	}
 
-	private func shouldIgnoreColor(color: Int64) -> Bool {
-		let hsl = HexColor.toHSL(color)
-		return self.dynamicType.shouldIgnoreColor(hsl)
+	private func shouldIgnore(color: Int64) -> Bool {
+		return HexColor.toHSL(color).shouldIgnore
 	}
 
-	private static func shouldIgnoreColor(color: PaletteSwatch) -> Bool {
-		return self.shouldIgnoreColor(color.hsl)
+	private static func shouldIgnore(color: PaletteSwatch) -> Bool {
+		return color.hsl.shouldIgnore
 	}
 
-	private static func shouldIgnoreColor(hslColor: HSLColor) -> Bool {
-		return self.isWhite(hslColor) || self.isBlack(hslColor) || self.isNearRedILine(hslColor)
+}
+
+extension HSLColor {
+
+	fileprivate var shouldIgnore: Bool {
+		return self.isWhite || self.isBlack || self.isNearRedILine
 	}
 
 	/**
 	:return: true if the color represents a color which is close to black.
 	*/
-	private static func isBlack(hslColor: HSLColor) -> Bool {
-		return hslColor.lightness <= BLACK_MAX_LIGHTNESS
+	fileprivate var isBlack: Bool {
+		return self.lightness <= BLACK_MAX_LIGHTNESS
 	}
 
 	/**
 	:return: true if the color represents a color which is close to white.
 	*/
-	private static func isWhite(hslColor: HSLColor) -> Bool {
-		return hslColor.lightness >= WHITE_MIN_LIGHTNESS
+	fileprivate var isWhite:  Bool {
+		return self.lightness >= WHITE_MIN_LIGHTNESS
 	}
 
 	/**
 	:return: true if the color lies close to the red side of the I line.
 	*/
-	private static func isNearRedILine(hslColor: HSLColor) -> Bool {
-		return hslColor.hue >= 10.0 && hslColor.hue <= 37.0 && hslColor.saturation <= 0.82
+	fileprivate var isNearRedILine: Bool {
+		return self.hue >= 10.0 && self.hue <= 37.0 && self.saturation <= 0.82
 	}
 
 }
@@ -228,8 +237,12 @@ private class Vbox: Hashable {
 		self.fitBox()
 	}
 
-	var volume: Int {
-		return (self.maxRed - self.minRed + 1) * (self.maxGreen - self.minGreen + 1) * (self.maxBlue - self.minBlue + 1)
+	var volume: Int64 {
+		let red = Double((self.maxRed - self.minRed) + 1)
+		let green = Double((self.maxGreen - self.minGreen) + 1)
+		let blue = Double((self.maxBlue - self.minBlue) + 1)
+
+		return Int64(red * green * blue)
 	}
 
 	var canSplit: Bool {
@@ -266,12 +279,12 @@ private class Vbox: Hashable {
 	}
 
 	/**
-	Split this color box at the mid-point along it's longest dimension
+	Split this color box at the mid-point along it’s longest dimension
 	
 	:return: the new ColorBox
 	*/
 	func splitBox() -> Vbox {
-		if (!self.canSplit) {
+		guard self.canSplit else {
 			fatalError("Can not split a box with only 1 color")
 		}
 
@@ -282,7 +295,7 @@ private class Vbox: Hashable {
 
 		let newBox = Vbox(quantizer: self.quantizer, lowerIndex: splitPoint + 1, upperIndex: self.upperIndex)
 
-		// Now change this box's upperIndex and recompute the color boundaries
+		// Now change this box’s upperIndex and recompute the color boundaries
 		self.upperIndex = splitPoint
 		assert(self.lowerIndex <= self.upperIndex, "lowerIndex (\(self.lowerIndex)) can’t be > upperIndex (\(self.upperIndex))")
 		self.fitBox()
@@ -308,11 +321,11 @@ private class Vbox: Hashable {
 	}
 
 	/**
-	Finds the point within this box's lowerIndex and upperIndex index of where to split.
+	Finds the point within this box’s lowerIndex and upperIndex index of where to split.
 
 	This is calculated by finding the longest color dimension, and then sorting the
 	sub-array based on that dimension value in each color. The colors are then iterated over
-	until a color is found with at least the midpoint of the whole box's dimension midpoint.
+	until a color is found with at least the midpoint of the whole box’s dimension midpoint.
 
 	:return: the index of the colors array to split from
 	*/
@@ -322,20 +335,14 @@ private class Vbox: Hashable {
 		// Sort the colors in this box based on the longest color dimension.
 
 		var sorted = self.quantizer.colors[self.lowerIndex...self.upperIndex]
-		sorted.sortInPlace()
+		sorted.sort()
 
 		if longestDimension == COMPONENT_RED {
-			sorted.sortInPlace() {
-				return HexColor.red($0) < HexColor.red($1)
-			}
+			sorted.sort() { HexColor.red($0) < HexColor.red($1) }
 		} else if longestDimension == COMPONENT_GREEN {
-			sorted.sortInPlace() {
-				return HexColor.green($0) < HexColor.green($1)
-			}
+			sorted.sort() { HexColor.green($0) < HexColor.green($1) }
 		} else  {
-			sorted.sortInPlace() {
-				return HexColor.blue($0) < HexColor.blue($1)
-			}
+			sorted.sort() { HexColor.blue($0) < HexColor.blue($1) }
 		}
 
 		self.quantizer.colors[self.lowerIndex...self.upperIndex] = sorted
@@ -372,12 +379,14 @@ private class Vbox: Hashable {
 		for i in self.lowerIndex ... self.upperIndex {
 			let color = self.quantizer.colors[i]
 
-			if let colorPopulation = self.quantizer.colorPopulations[color] {
-				totalPopulation += colorPopulation
-				redSum += colorPopulation * HexColor.red(color)
-				greenSum += colorPopulation * HexColor.green(color)
-				blueSum += colorPopulation * HexColor.blue(color)
+			guard let colorPopulation = self.quantizer.colorPopulations[color] else {
+				continue
 			}
+
+			totalPopulation += colorPopulation
+			redSum += colorPopulation * HexColor.red(color)
+			greenSum += colorPopulation * HexColor.green(color)
+			blueSum += colorPopulation * HexColor.blue(color)
 		}
 
 		let redAverage = Int64(round(Double(redSum) / Double(totalPopulation)))
@@ -390,7 +399,7 @@ private class Vbox: Hashable {
 	/**
 	* @return the midpoint of this box in the given {@code dimension}
 	*/
-	func midPoint(dimension: Int) -> Int64 {
+	func midPoint(_ dimension: Int) -> Int64 {
 		switch (dimension) {
 			case COMPONENT_GREEN:
 				return (self.minGreen + self.maxGreen) / Int64(2)

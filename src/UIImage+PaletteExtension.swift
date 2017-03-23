@@ -12,10 +12,10 @@ import UIKit
 extension UIImage {
 
 	/**
-	Scale the image down so that it's largest dimension is targetMaxDimension.
+	Scale the image down so that it’s largest dimension is targetMaxDimension.
 	If image is smaller than this, then it is returned.
 	*/
-	internal func scaleDown(targetMaxDimension: CGFloat) -> UIImage? {
+	internal func scaleDown(to targetMaxDimension: CGFloat) -> UIImage? {
 		let size = self.size
 		let maxDimensionInPoints = max(size.width, size.height)
 		let maxDimensionInPixels = maxDimensionInPoints * self.scale
@@ -29,55 +29,54 @@ extension UIImage {
 		let width = round(size.width * scaleRatio)
 		let height = round(size.height * scaleRatio)
 
-		UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), true, 1.0)
-		self.drawInRect(CGRectMake(0.0, 0.0, width, height))
+		UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: height), true, 1.0)
+		self.draw(in: CGRect(x: 0.0, y: 0.0, width: width, height: height))
 		let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
 
 		return scaledImage
 	}
 
-	internal var pixels: Array<Int64> {
-		let image = self.CGImage!
+	internal var pixels: [Int64] {
+		let image = self.cgImage!
 
-		let pixelsWide = CGImageGetWidth(image)
-		let pixelsHigh = CGImageGetHeight(image)
+		let pixelsWide = image.width
+		let pixelsHigh = image.height
 
 		let bitmapBytesPerRow = (pixelsWide * 4)
 		let bitmapByteCount = (bitmapBytesPerRow * pixelsHigh)
 
-		if let colorSpace = CGColorSpaceCreateDeviceRGB() {
-			let bitmapData = malloc(bitmapByteCount)
-			defer { free(bitmapData) }
+		let colorSpace = CGColorSpaceCreateDeviceRGB()
+		let bitmapData = malloc(bitmapByteCount)
+		defer { free(bitmapData) }
 
-			if let context = CGBitmapContextCreate(bitmapData, pixelsWide, pixelsHigh, 8, bitmapBytesPerRow, colorSpace, CGImageAlphaInfo.PremultipliedFirst.rawValue) {
-				CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGFloat(pixelsWide), CGFloat(pixelsHigh)), image)
-
-				let unconstrainedData = CGBitmapContextGetData(context)
-				let data = UnsafePointer<UInt8>(unconstrainedData)
-				var pixels = Array<Int64>()
-
-				for x in 0 ..< pixelsWide {
-					for y in 0 ..< pixelsHigh {
-						let pixelInfo = ((pixelsWide * y) + x) * 4
-
-						let alpha = Int64(data[pixelInfo])
-						let red = Int64(data[pixelInfo + 1])
-						let green = Int64(data[pixelInfo + 2])
-						let blue = Int64(data[pixelInfo + 3])
-
-						pixels.append(HexColor.fromARGB(alpha, red: red, green: green, blue: blue))
-					}
-				}
-
-				return pixels
-			} else {
-				fatalError("Unable to create bitmap context!")
-			}
-		} else {
-			fatalError("Unable to allocate color space")
+		guard let context = CGContext(data: bitmapData, width: pixelsWide, height: pixelsHigh, bitsPerComponent: 8, bytesPerRow: bitmapBytesPerRow, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue) else {
+			fatalError("Unable to create bitmap context")
 		}
 
+		guard let unconstrainedData = context.data else {
+			fatalError("Unable to get bitmap data")
+		}
+
+		context.draw(image, in: CGRect(x: 0.0, y: 0.0, width: CGFloat(pixelsWide), height: CGFloat(pixelsHigh)))
+
+		let data = unconstrainedData.bindMemory(to: UInt8.self, capacity: pixelsWide * pixelsHigh)
+		var pixels = [Int64]()
+
+		for x in 0 ..< pixelsWide {
+			for y in 0 ..< pixelsHigh {
+				let pixelInfo = ((pixelsWide * y) + x) * 4
+
+				let alpha = Int64(data[pixelInfo])
+				let red = Int64(data[pixelInfo + 1])
+				let green = Int64(data[pixelInfo + 2])
+				let blue = Int64(data[pixelInfo + 3])
+
+				pixels.append(HexColor.fromARGB(alpha, red: red, green: green, blue: blue))
+			}
+		}
+
+		return pixels
 	}
 
 }

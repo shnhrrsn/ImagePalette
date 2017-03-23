@@ -63,7 +63,7 @@ internal class RGBColor: Hashable, Equatable {
 			s = 0.0
 		} else {
 			if maxValue == rf {
-				h = ((gf - bf) / deltaMaxMin) % 6.0
+				h = ((gf - bf) / deltaMaxMin).truncatingRemainder(dividingBy: 6.0)
 			} else if maxValue == gf {
 				h = ((bf - rf) / deltaMaxMin) + 2.0
 			} else {
@@ -73,7 +73,7 @@ internal class RGBColor: Hashable, Equatable {
 			s = deltaMaxMin / (1.0 - abs(2.0 * l - 1.0))
 		}
 
-		return HSLColor(hue: (h * 60.0) % 360.0, saturation: s, lightness: l, alpha: CGFloat(self.alpha) / 255.0)
+		return HSLColor(hue: (h * 60.0).truncatingRemainder(dividingBy: 360.0), saturation: s, lightness: l, alpha: CGFloat(self.alpha) / 255.0)
 	}
 
 }
