@@ -4,7 +4,7 @@ Swift/iOS port of Android's Palette https://developer.android.com/reference/andr
 ## Basic Usage
 
 ```swift
-Palette.generateWithConfiguration(PaletteConfiguration(image: image)) {
+Palette.generateWith(configuration: PaletteConfiguration(image: image)) {
 	if let color = $0.darkMutedSwatch?.color {
 		self.backgroundColor = color
 	}
