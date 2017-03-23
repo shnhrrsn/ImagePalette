@@ -146,10 +146,7 @@ internal class DefaultPaletteGenerator: PaletteGenerator {
 		var sum = CGFloat(0)
 		var sumWeight = CGFloat(0)
 
-		var i = 0
-		while i < values.count {
-			defer { i += 1 }
-
+		for i in stride(from: 0, to: values.count - 1, by: 2) {
 			let value = values[i]
 			let weight = values[i + 1]
 			
