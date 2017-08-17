@@ -8,8 +8,8 @@
 
 import UIKit
 
-private let MIN_ALPHA_SEARCH_MAX_ITERATIONS = 10
-private let MIN_ALPHA_SEARCH_PRECISION = 10
+private let MIN_ALPHA_SEARCH_MAX_ITERATIONS = Int64(10)
+private let MIN_ALPHA_SEARCH_PRECISION = Int64(10)
 
 internal struct HexColor {
 	static let WHITE = HexColor.fromRGB(255, green: 255, blue: 255)
@@ -162,7 +162,7 @@ internal struct HexColor {
 		}
 
 		// Binary search to find a value with the minimum value which provides sufficient contrast
-		var numIterations = 0
+		var numIterations = Int64(0)
 		var minAlpha = Int64(0)
 		var maxAlpha = Int64(255)
 

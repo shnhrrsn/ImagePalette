@@ -129,10 +129,10 @@ extension PaletteSwatch: CustomDebugStringConvertible {
 	public var debugDescription: String {
 		var description = "<\(type(of: self)) 0x\(self.hashValue)"
 		description += "; color = \(self.color)"
-		description += "; hsl = \(self._hsl)"
+		description += "; hsl = \(String(describing: self._hsl))"
 		description += "; population = \(self.population)"
-		description += "; titleTextColor = \(self.titleTextColor)"
-		description += "; bodyTextColor = \(self.bodyTextColor)"
+		description += "; titleTextColor = \(String(describing: self.titleTextColor))"
+		description += "; bodyTextColor = \(String(describing: self.bodyTextColor))"
 		return description + ">"
 	}
 
@@ -141,8 +141,8 @@ extension PaletteSwatch: CustomDebugStringConvertible {
 extension PaletteSwatch: Equatable, Hashable {
 
 	public var hashValue: Int {
-        let maxInt = Int64(Int32.max)
-		return Int((31 * self.color.hashValue + self.population) % maxInt)
+        let maxInt = Int(Int32.max)
+		return Int((31 * self.color.hashValue + Int(self.population)) % maxInt)
 	}
 
 }
