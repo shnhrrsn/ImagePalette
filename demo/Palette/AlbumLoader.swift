@@ -39,7 +39,7 @@ struct AlbumLoader {
 
 			var rank = 0
 
-			let albums: [Album] = entries.flatMap {
+            let albums: [Album] = entries.compactMap {
 				guard let artwork = ($0["im:image"] as? [JsonObject])?.first?["label"] as? String else {
 					return nil
 				}
