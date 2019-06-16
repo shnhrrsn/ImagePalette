@@ -5,6 +5,6 @@ use_frameworks!
 
 target 'Palette' do
 
-	pod 'SwiftPriorityQueue', '~> 1.1.2'
+	pod 'SwiftPriorityQueue', '~> 1.2.1'
 
 end

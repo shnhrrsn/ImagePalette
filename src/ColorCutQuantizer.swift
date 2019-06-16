@@ -224,9 +224,11 @@ private class Vbox: Hashable {
 
 	private let quantizer: ColorCutQuantizer
 
-	private static var ordinal = Int32(0)
-
-	let hashValue = Int(OSAtomicIncrement32(&Vbox.ordinal))
+    var hashValue: Int {
+        let counter = Counter()
+        counter.increment()
+        return counter.value
+    }
 
 	init(quantizer: ColorCutQuantizer, lowerIndex: Int, upperIndex: Int) {
 		self.quantizer = quantizer
@@ -433,4 +435,15 @@ private func <(lhs: Vbox, rhs: Vbox) -> Bool {
 
 private func >(lhs: Vbox, rhs: Vbox) -> Bool {
 	return lhs.volume > rhs.volume
+}
+
+class Counter {
+    private var queue = DispatchQueue(label: "true.pallete")
+    private (set) var value: Int = 0
+    
+    func increment() {
+        queue.sync {
+            value += 1
+        }
+    }
 }
