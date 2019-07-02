@@ -28,6 +28,7 @@
 		A1DE2F2A2C4B09440055D11A /* Pods_Palette.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B7A88A7EC8D7FFAE125DE51 /* Pods_Palette.framework */; };
 		FB00716D22B6114E0057F6B1 /* ColorBGPalleteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB00716B22B6114E0057F6B1 /* ColorBGPalleteCache.swift */; };
 		FB00716E22B6114E0057F6B1 /* PalleteiOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB00716C22B6114E0057F6B1 /* PalleteiOS.swift */; };
+		FB80BE1422CBC99500F906D3 /* PalleteConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB80BE1322CBC99500F906D3 /* PalleteConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		B34F0A4CB368DE962771DCBA /* Pods-Palette.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Palette.release.xcconfig"; path = "Pods/Target Support Files/Pods-Palette/Pods-Palette.release.xcconfig"; sourceTree = "<group>"; };
 		FB00716B22B6114E0057F6B1 /* ColorBGPalleteCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorBGPalleteCache.swift; sourceTree = "<group>"; };
 		FB00716C22B6114E0057F6B1 /* PalleteiOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PalleteiOS.swift; sourceTree = "<group>"; };
+		FB80BE1322CBC99500F906D3 /* PalleteConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PalleteConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 			children = (
 				FB00716B22B6114E0057F6B1 /* ColorBGPalleteCache.swift */,
 				FB00716C22B6114E0057F6B1 /* PalleteiOS.swift */,
+				FB80BE1322CBC99500F906D3 /* PalleteConfig.swift */,
 			);
 			path = PalleteiOS;
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 				FB00716E22B6114E0057F6B1 /* PalleteiOS.swift in Sources */,
 				288FC1F51E834C88003679D4 /* HexColor.swift in Sources */,
 				288FC1F21E834C88003679D4 /* ColorCutQuantizer.swift in Sources */,
+				FB80BE1422CBC99500F906D3 /* PalleteConfig.swift in Sources */,
 				288FC1F91E834C88003679D4 /* PaletteGenerator.swift in Sources */,
 				288FC1FA1E834C88003679D4 /* PaletteSwatch.swift in Sources */,
 				288FC1F81E834C88003679D4 /* PaletteConfiguration.swift in Sources */,

@@ -9,31 +9,57 @@
 import UIKit
 
 extension UIView {
-    func generateColorBy(img: UIImage, path: String, defaultColor: UIColor) {
-        let newSize = getSizeOfImageFromDisplay(size: img.size)
-        let imageSmall = img.resized(to: newSize)
+    public func generateColorBy(img: UIImage?, path: String, defaultColor: UIColor?, complete: ((_ color: UIColor) -> Void)?) {
+        //set default color when user is not take default color.
+        let _defaultColor: UIColor   = defaultColor ?? .lightGray
         
-        if let color = ColorBGPalleteCache.shared.getColor(key: path) {
-            self.backgroundColor = color
+        guard let _img = img else {
+            self.setUpBackgroudColor(color: _defaultColor)
             return
         }
         
+        //Get color from cache
+        if let color = ColorBGPalleteCache.shared.getColor(key: path) {
+            self.setUpBackgroudColor(color: color)
+            return
+        }
+        
+        //Resize image
+        let newSize = getSizeOfImageFromDisplay(size: _img.size)
+        let imageSmall = _img.resized(to: newSize)
+        
         DispatchQueue.global(qos: .userInteractive).async {
             var config =  PaletteConfiguration(image: imageSmall)
-            let maxColor = 24
+            let maxColor = PalleteConfig.maxColor
             
             config.maxColors = maxColor
             
             Palette.generateWith(configuration: config, completion: { (pallette) in
-                if let palleteColor = pallette.lightVibrantSwatch?.color {
-                    ColorBGPalleteCache.shared.addColor(key: path, color: palleteColor)
+                if let palleteColor = pallette.darkVibrantSwatch?.color {
+                    self.addColorToCache(color: palleteColor, path: path)
                     self.setUpBackgroudColor(color: palleteColor)
+                    complete?(palleteColor)
                 } else {
-                    self.setUpBackgroudColor(color: defaultColor)
+                    self.addColorToCache(color: _defaultColor, path: path)
+                    self.setUpBackgroudColor(color: _defaultColor)
+                    complete?(_defaultColor)
                 }
                 self.layoutIfNeeded()
                 self.setNeedsDisplay()
             })
+        }
+    }
+    
+    private func addColorToCache(color: UIColor, path: String) {
+        guard !path.isEmpty else { return }
+        
+        //save color to cache
+        ColorBGPalleteCache.shared.addColor(key: path, color: color)
+    }
+    
+    private func setUpBackgroudColor(color: UIColor) {
+        DispatchQueue.main.async {
+            self.backgroundColor = color
         }
     }
     
@@ -42,12 +68,6 @@ extension UIView {
         let screenSize = UIScreen.main.bounds
         let newSize = CGSize(width: screenSize.size.width, height: screenSize.size.width/ratio)
         return newSize
-    }
-    
-    private func setUpBackgroudColor(color: UIColor) {
-        DispatchQueue.main.async {
-            self.backgroundColor = color
-        }
     }
 }
 
