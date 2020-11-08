@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name         = "ImagePalette"
   s.version      = "0.1.0"
   s.summary      = "Swift/iOS port of Android’s Palette"
-  s.homepage     = "https://github.com/shnhrrsn/ImagePalette"
+  s.homepage     = "https://github.com/terminox/ImagePalette"
   s.license      = "Apache License 2.0"
 
   s.author       = "Shaun Harrison"
@@ -10,11 +10,11 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, "8.0"
   s.source       = {
-    :git => "https://github.com/shnhrrsn/ImagePalette.git",
+    :git => "https://github.com/terminox/ImagePalette.git",
     :tag => s.version
   }
   s.source_files = "src/*.swift"
   s.requires_arc = true
 
-  s.dependency 'SwiftPriorityQueue', '~> 1.1.2'
+  s.dependency 'SwiftPriorityQueue', '~> 1.3.1'
 end
