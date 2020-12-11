@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
   s.source_files = "src/*.swift"
   s.requires_arc = true
 
-  s.dependency 'SwiftPriorityQueue', '~> 1.1.2'
+  s.dependency 'SwiftPriorityQueue', '~> 1.3.1'
 end
